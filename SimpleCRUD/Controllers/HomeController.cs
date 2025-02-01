@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SimpleCRUD.Data;
 using SimpleCRUD.Models;
 using SimpleCRUD.Service;
 
@@ -8,15 +9,16 @@ namespace SimpleCRUD.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    public HomeController(ILogger<HomeController> logger)
+    private readonly ProductService _productService;
+    public HomeController(ILogger<HomeController> logger, ProductService productService)
     {
         _logger = logger;
+        _productService = productService;
     }
-
 
     public IActionResult Index()
     {
-        ViewBag.productCount = ProductService.AllProducts().Count;
+        ViewBag.productCount = _productService.AllProducts().Count;
         return View();
     }
 

@@ -1,37 +1,76 @@
 using System;
+using SimpleCRUD.Data;
 using SimpleCRUD.Models;
 
 namespace SimpleCRUD.Service;
 
-public static class ProductService
+public class ProductService
 {
-    private static List<Product> _products = new(){
-        new Product(){ Id = 1, Name = "Laptop", Price = 10000 },
-        new Product(){ Id = 2, Name = "Mouse", Price = 500 },
-        new Product(){ Id = 3, Name = "Keyboard", Price = 1000 },
-    };
-
-    public static List<Product> AllProducts() => _products.ToList();
-
-    public static void AddProduct(Product product){
-        product.Id = _products.Count + 1;
-        _products.Add(product);
+    private readonly ApplicationDbContext _context;
+    public ProductService(ApplicationDbContext context)
+    {
+        _context = context;
     }
 
-    public static Product FindProduct(int id) => _products.FirstOrDefault(p => p.Id == id);
+    // private static List<Product> _products = new(){
+    //     new Product(){ Id = 1, Name = "Laptop", Price = 10000 },
+    //     new Product(){ Id = 2, Name = "Mouse", Price = 500 },
+    //     new Product(){ Id = 3, Name = "Keyboard", Price = 1000 },
+    // };
 
-    public static void UpdateProduct(Product product){
-        var oldProduct = FindProduct(product.Id);
-        if(oldProduct != null){
-            oldProduct.Name = product.Name;
-            oldProduct.Price = product.Price;
+    public List<Product> AllProducts() => _context.Products.ToList();
+
+    public void AddProduct(Product product)
+    {
+        try
+        {
+            _context.Products.Add(product);
+            _context.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 
-    public static void DeleteProduct(int id){
-        var product = FindProduct(id);
-        if(product != null){
-            _products.Remove(product);
+    public Product FindProduct(int id) => _context.Products.FirstOrDefault(p => p.Id == id);
+
+    public void UpdateProduct(Product product)
+    {
+        try
+        {
+            var oldProduct = FindProduct(product.Id);
+            if (oldProduct != null)
+            {
+                oldProduct.Name = product.Name;
+                oldProduct.Price = product.Price;
+                _context.Products.Update(product);
+                _context.SaveChanges();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+
+    }
+
+    public void DeleteProduct(int id)
+    {
+        try
+        {
+            var product = FindProduct(id);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 

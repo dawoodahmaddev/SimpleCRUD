@@ -1,7 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using SimpleCRUD.Data;
+using SimpleCRUD.Models;
+using SimpleCRUD.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); 
+
+builder.Services.AddDbContext<ApplicationDbContext>(options=> {
+    options.UseSqlite(connectionString);
+});
+
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 
